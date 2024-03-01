@@ -6,7 +6,7 @@ const app = express();
 const port = 5000;
 
 app.use(cors());
-app.use(express());
+app.use(express.json());
 
 // username: mydbuser2
 // password: CekJho4UZ5uG0tiq
@@ -27,18 +27,20 @@ async function run() {
         const database = client.db("Gadget-Monkey");
         const productsCollection = database.collection("produts");
 
-        const doc = {
-            name: 'Laptop',
-            price: 150000,
-            quantity: 12
-        }
+        // Get API
         app.get('/products', async(req, res) => {
             const cursor = productsCollection.find({});
             const products = await cursor.toArray();
             res.send(products);
         })
 
-        // const result = await productsCollection.insertOne(doc);
+        // Post API
+        app.post('/products', async(req, res) => {
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            console.log('Got product ', product);
+            res.send(result)
+        })
     }
 
     finally {
