@@ -47,8 +47,26 @@ async function run() {
         app.post('/products', async(req, res) => {
             const product = req.body;
             const result = await productsCollection.insertOne(product);
-            console.log('Got product ', product);
             res.send(result)
+        })
+
+        // Update API
+        app.put('/products/:id', async(req, res) => {
+            const id = req.params.id;
+            const filter = {_id: new ObjectId(id)};
+            const updatedProduct = req.body;
+            const options = { upsert: true };
+
+            const updateDoc = {
+                $set: {
+                  name: updatedProduct.name,
+                  price: updatedProduct.price,
+                  quantity: updatedProduct.quantity,
+                  offer: updatedProduct.offer
+                },
+              };
+              const result = await productsCollection.updateOne(filter, updateDoc, options);
+              res.send(result);
         })
 
         // Delete API
